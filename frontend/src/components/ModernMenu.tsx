@@ -25,6 +25,7 @@ export type ModernMenuProps = {
   setCityName: (cityName: string) => void;
   viewSettings: ViewSettings;
   setViewSettings: (viewSettings: ViewSettings) => void;
+  onShowKeyboardHelp?: () => void;
 };
 
 export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
@@ -38,6 +39,7 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
       setCityName,
       viewSettings,
       setViewSettings,
+      onShowKeyboardHelp,
     },
     ref
   ) => {
@@ -121,19 +123,31 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
               </CardHeader>
               <CardContent className="text-neutral-300 space-y-3">
                 <ExplanationText />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    window.open(
-                      "https://www.youtube.com/watch?v=rC2VQ-oyDG0",
-                      "_blank"
-                    )
-                  }
-                  className="w-full text-white border-neutral-500 hover:bg-neutral-600"
-                >
-                  📺 Watch Explanation Video
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      window.open(
+                        "https://www.youtube.com/watch?v=rC2VQ-oyDG0",
+                        "_blank"
+                      )
+                    }
+                    className="w-full text-white border-neutral-500 hover:bg-neutral-600"
+                  >
+                    📺 Watch Explanation Video
+                  </Button>
+                  {onShowKeyboardHelp && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onShowKeyboardHelp}
+                      className="w-full text-white border-neutral-500 hover:bg-neutral-600"
+                    >
+                      ⌨️ Keyboard Shortcuts
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 

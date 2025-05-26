@@ -9,6 +9,8 @@ import { useMapSizePx } from "../useIsMobile";
 import { useSearchParamsState } from "../useSearchParamsState";
 import { ExplanationModal } from "./ExplanationModal";
 import { ViewSettings, updateViewSettings } from "../viewSettings";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
+import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 
 const clamp = (num: number, min: number, max: number) => {
   return Math.min(Math.max(num, min), max);
@@ -69,6 +71,16 @@ const App = () => {
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Enhanced keyboard shortcuts
+  const { shortcuts, showHelp, setShowHelp } = useKeyboardShortcuts({
+    viewSettings,
+    setViewSettings,
+    timeness,
+    setTimeness,
+    isMenuOpen,
+    setMenuOpen,
+  });
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -131,9 +143,6 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
       <div
         tabIndex={0}
-        onKeyDown={(e) => {
-          setViewSettings(updateViewSettings(viewSettings, e.code));
-        }}
         onPointerDown={(e) => {
           setIsPressed(true);
         }}
@@ -167,6 +176,11 @@ const App = () => {
         className="absolute -z-10 select-none"
       >
         {showExplantion && <ExplanationModal />}
+        <KeyboardShortcutsModal
+          shortcuts={shortcuts}
+          isOpen={showHelp}
+          onClose={() => setShowHelp(false)}
+        />
         {/* The <Stage> wrapper must live outside of the SpacetimeMap component
             for useTick() to work. */}
         <Stage
@@ -213,6 +227,7 @@ const App = () => {
         setCityName={setCityName}
         viewSettings={viewSettings}
         setViewSettings={setViewSettings}
+        onShowKeyboardHelp={() => setShowHelp(true)}
       />
     </div>
   );
