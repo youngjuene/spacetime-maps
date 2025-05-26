@@ -13,6 +13,8 @@ import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 import { useTouchGestures } from "../hooks/useTouchGestures";
 import { FloatingActionButton, FloatingAction } from "./ui";
+import { MultiCityComparison } from "./MultiCityComparison";
+import { useAnimationControls } from "../hooks/useAnimationControls";
 
 const clamp = (num: number, min: number, max: number) => {
   return Math.min(Math.max(num, min), max);
@@ -68,12 +70,18 @@ const App = () => {
   const [city, setCity] = useState<City | null>(null);
   const [totalTime, setTotalTime] = useState(0);
   const [showExplantion, setShowExplantion] = useState(true);
+  const [showMultiCity, setShowMultiCity] = useState(false);
 
   const mapSizePx = useMapSizePx();
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<HTMLDivElement>(null);
+
+  // Enhanced animation controls
+  const { animationState, controls: animationControls } = useAnimationControls({
+    onTimeChange: setTimeness,
+  });
 
   // Enhanced keyboard shortcuts
   const { shortcuts, showHelp, setShowHelp } = useKeyboardShortcuts({
@@ -112,8 +120,12 @@ const App = () => {
     {
       icon: "🎮",
       label: "Toggle Animation",
-      onClick: () =>
-        setViewSettings({ ...viewSettings, animate: !viewSettings.animate }),
+      onClick: () => animationControls.play(),
+    },
+    {
+      icon: "🗺️",
+      label: "Multi-City",
+      onClick: () => setShowMultiCity(!showMultiCity),
     },
     {
       icon: "📱",
@@ -124,11 +136,6 @@ const App = () => {
       icon: "⌨️",
       label: "Shortcuts",
       onClick: () => setShowHelp(true),
-    },
-    {
-      icon: "🔄",
-      label: "Reset View",
-      onClick: () => setTimeness(0),
     },
   ];
 
@@ -234,6 +241,33 @@ const App = () => {
           isOpen={showHelp}
           onClose={() => setShowHelp(false)}
         />
+
+        {/* Multi-City Comparison Modal */}
+        {showMultiCity && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-neutral-900 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-white">
+                    Multi-City Comparison
+                  </h2>
+                  <button
+                    onClick={() => setShowMultiCity(false)}
+                    className="text-white hover:text-neutral-300 text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <MultiCityComparison
+                  viewSettings={viewSettings}
+                  timeness={timeness}
+                  onTick={onTick}
+                  mapSizePx={Math.min(mapSizePx / 2, 400)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
         {/* The <Stage> wrapper must live outside of the SpacetimeMap component
             for useTick() to work. */}
         <Stage
@@ -281,6 +315,7 @@ const App = () => {
         viewSettings={viewSettings}
         setViewSettings={setViewSettings}
         onShowKeyboardHelp={() => setShowHelp(true)}
+        onShowMultiCity={() => setShowMultiCity(true)}
       />
 
       {/* Mobile Floating Action Button - only show on mobile */}

@@ -2,6 +2,8 @@ import React, { forwardRef, useEffect, useState } from "react";
 import { HamburgerMenuIcon } from "./HamburgerMenuIcon";
 import { CITIES } from "../cityData";
 import { ModernViewSettingsPanel } from "./ModernViewSettingsPanel";
+import { AnimationControlsPanel } from "./AnimationControlsPanel";
+import { useAnimationControls } from "../hooks/useAnimationControls";
 import { ViewSettings } from "../viewSettings";
 import { ExplanationText } from "./ExplanationText";
 import {
@@ -26,6 +28,7 @@ export type ModernMenuProps = {
   viewSettings: ViewSettings;
   setViewSettings: (viewSettings: ViewSettings) => void;
   onShowKeyboardHelp?: () => void;
+  onShowMultiCity?: () => void;
 };
 
 export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
@@ -40,10 +43,16 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
       viewSettings,
       setViewSettings,
       onShowKeyboardHelp,
+      onShowMultiCity,
     },
     ref
   ) => {
     const [isAnimating, setIsAnimating] = useState(false);
+
+    // Enhanced animation controls
+    const { animationState, controls } = useAnimationControls({
+      onTimeChange: setTimeness,
+    });
 
     // Reset timeness when city changes
     useEffect(() => {
@@ -149,6 +158,16 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
                       ⌨️ Keyboard Shortcuts
                     </Button>
                   )}
+                  {onShowMultiCity && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onShowMultiCity}
+                      className="w-full text-white border-neutral-500 hover:bg-neutral-600"
+                    >
+                      🗺️ Multi-City Comparison
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -173,6 +192,13 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
                 />
               </CardContent>
             </Card>
+
+            {/* Animation Controls */}
+            <AnimationControlsPanel
+              animationState={animationState}
+              controls={controls}
+              compact={false}
+            />
 
             {/* View Settings */}
             <Card
