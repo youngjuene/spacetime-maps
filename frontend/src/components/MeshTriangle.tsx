@@ -18,20 +18,20 @@ export default PixiComponent("MeshTriangle", {
   create: (props: Props) => {
     return new PIXI.SimpleMesh(
       PIXI.Texture.from(props.image),
-      props.vertices,
-      props.uvs,
-      indices,
+      props.vertices as any,
+      props.uvs as any,
+      indices as any,
       PIXI.DRAW_MODES.TRIANGLES
     );
   },
   applyProps: (instance, oldProps, newProps) => {
     if (oldProps.vertices !== newProps.vertices) {
-      instance.vertices = newProps.vertices;
+      instance.vertices = newProps.vertices as any;
     }
     // We don't need to update `uvs` or `image` but let's leave the code here
     // in case we need it later.
     if (oldProps.uvs !== newProps.uvs) {
-      instance.uvs = newProps.uvs;
+      instance.uvs = newProps.uvs as any;
     }
     if (oldProps.image !== newProps.image) {
       instance.texture = PIXI.Texture.from(newProps.image);

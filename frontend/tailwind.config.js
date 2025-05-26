@@ -1,4 +1,4 @@
-import { modernTheme } from "./src/theme/colors.js";
+import { modernTheme } from "./src/theme/colors.ts";
 
 /** @type {import('tailwindcss').Config} */
 const config = {

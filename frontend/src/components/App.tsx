@@ -128,7 +128,7 @@ const App = () => {
   }, [cityName]);
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
       <div
         tabIndex={0}
         onKeyDown={(e) => {
@@ -174,7 +174,7 @@ const App = () => {
           height={mapSizePx}
           options={{
             autoDensity: true,
-            backgroundColor: 0xeef1f5,
+            backgroundColor: 0xf8fafc, // neutral-50 in hex
           }}
         >
           {city === null && (
