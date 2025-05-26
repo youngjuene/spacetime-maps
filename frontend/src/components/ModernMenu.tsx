@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { HamburgerMenuIcon } from "./HamburgerMenuIcon";
 import { CITIES } from "../cityData";
-import { ViewSettingsPanel } from "./ViewSettingsPanel";
+import { ModernViewSettingsPanel } from "./ModernViewSettingsPanel";
 import { ViewSettings } from "../viewSettings";
 import { ExplanationText } from "./ExplanationText";
 import {
@@ -169,7 +169,7 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ViewSettingsPanel
+                <ModernViewSettingsPanel
                   viewSettings={viewSettings}
                   setViewSettings={setViewSettings}
                 />

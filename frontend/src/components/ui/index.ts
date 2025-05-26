@@ -15,3 +15,9 @@ export type { DropdownProps, DropdownOption } from "./Dropdown";
 
 export { ProgressBar, SpaceTimeProgressBar } from "./ProgressBar";
 export type { ProgressBarProps } from "./ProgressBar";
+
+export { Toggle } from "./Toggle";
+export type { ToggleProps } from "./Toggle";
+
+export { Slider } from "./Slider";
+export type { SliderProps } from "./Slider";
