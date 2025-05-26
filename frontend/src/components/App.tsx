@@ -3,7 +3,7 @@ import { SpacetimeMap } from "./SpacetimeMap";
 import { useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { Point } from "../mesh";
-import { Menu } from "./Menu";
+import { ModernMenu } from "./ModernMenu";
 import { City, DEFAULT_CITY, fetchCity } from "../cityData";
 import { useMapSizePx } from "../useIsMobile";
 import { useSearchParamsState } from "../useSearchParamsState";
@@ -203,7 +203,7 @@ const App = () => {
             This fixes drag-to-scroll on not working on mobile. */}
         <div className="absolute top-0 left-0 w-full h-full z-10"></div>
       </div>
-      <Menu
+      <ModernMenu
         ref={menuRef}
         timeness={timeness}
         setTimeness={setTimeness}

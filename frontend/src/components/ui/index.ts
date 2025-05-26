@@ -9,3 +9,9 @@ export type { InputProps } from "./Input";
 
 export { LoadingSpinner, LoadingCard } from "./LoadingSpinner";
 export type { LoadingSpinnerProps } from "./LoadingSpinner";
+
+export { Dropdown } from "./Dropdown";
+export type { DropdownProps, DropdownOption } from "./Dropdown";
+
+export { ProgressBar, SpaceTimeProgressBar } from "./ProgressBar";
+export type { ProgressBarProps } from "./ProgressBar";
