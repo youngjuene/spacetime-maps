@@ -1,5 +1,8 @@
 {
-  "frontend/src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "frontend/src/**/*.{js,jsx,ts,tsx}": [
+    "cd frontend && npx eslint --fix",
+    "cd frontend && npx prettier --write"
+  ],
   "backend/**/*.py": ["black --check", "isort --check-only"],
-  "*.{json,md,yml,yaml}": ["prettier --write"]
+  "*.{json,md,yml,yaml}": ["cd frontend && npx prettier --write"]
 }
