@@ -11,6 +11,8 @@ import { ExplanationModal } from "./ExplanationModal";
 import { ViewSettings, updateViewSettings } from "../viewSettings";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
+import { useTouchGestures } from "../hooks/useTouchGestures";
+import { FloatingActionButton, FloatingAction } from "./ui";
 
 const clamp = (num: number, min: number, max: number) => {
   return Math.min(Math.max(num, min), max);
@@ -71,6 +73,7 @@ const App = () => {
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<HTMLDivElement>(null);
 
   // Enhanced keyboard shortcuts
   const { shortcuts, showHelp, setShowHelp } = useKeyboardShortcuts({
@@ -81,6 +84,53 @@ const App = () => {
     isMenuOpen,
     setMenuOpen,
   });
+
+  // Touch gestures for mobile
+  const { isGesturing } = useTouchGestures(appRef, {
+    onSwipeLeft: () => {
+      if (!isMenuOpen) setMenuOpen(true);
+    },
+    onSwipeRight: () => {
+      if (isMenuOpen) setMenuOpen(false);
+    },
+    onSwipeUp: () => {
+      setTimeness(Math.min(1, timeness + 0.1));
+    },
+    onSwipeDown: () => {
+      setTimeness(Math.max(0, timeness - 0.1));
+    },
+    onDoubleTap: () => {
+      setViewSettings({ ...viewSettings, animate: !viewSettings.animate });
+    },
+    onLongPress: () => {
+      setShowHelp(true);
+    },
+  });
+
+  // Mobile floating actions
+  const floatingActions: FloatingAction[] = [
+    {
+      icon: "🎮",
+      label: "Toggle Animation",
+      onClick: () =>
+        setViewSettings({ ...viewSettings, animate: !viewSettings.animate }),
+    },
+    {
+      icon: "📱",
+      label: "Toggle Menu",
+      onClick: () => setMenuOpen(!isMenuOpen),
+    },
+    {
+      icon: "⌨️",
+      label: "Shortcuts",
+      onClick: () => setShowHelp(true),
+    },
+    {
+      icon: "🔄",
+      label: "Reset View",
+      onClick: () => setTimeness(0),
+    },
+  ];
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -140,7 +190,10 @@ const App = () => {
   }, [cityName]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
+    <div
+      className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100"
+      ref={appRef}
+    >
       <div
         tabIndex={0}
         onPointerDown={(e) => {
@@ -229,6 +282,15 @@ const App = () => {
         setViewSettings={setViewSettings}
         onShowKeyboardHelp={() => setShowHelp(true)}
       />
+
+      {/* Mobile Floating Action Button - only show on mobile */}
+      <div className="md:hidden">
+        <FloatingActionButton
+          actions={floatingActions}
+          position="bottom-left"
+          size="md"
+        />
+      </div>
     </div>
   );
 };

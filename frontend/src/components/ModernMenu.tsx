@@ -75,6 +75,7 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
           "bg-gradient-to-br from-neutral-800 to-neutral-900 text-white",
           "shadow-2xl border-l border-neutral-700",
           "transition-all duration-300 ease-in-out",
+          "touch-pan-y", // Allow vertical scrolling on mobile
           isMenuOpen
             ? "translate-y-0"
             : "translate-y-[calc(100%-4rem)] md:translate-y-0",
@@ -107,6 +108,7 @@ export const ModernMenu = forwardRef<HTMLDivElement, ModernMenuProps>(
         <div
           className={cn(
             "overflow-hidden transition-all duration-300 ease-in-out",
+            "overscroll-contain", // Prevent scroll chaining on mobile
             isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           )}
         >

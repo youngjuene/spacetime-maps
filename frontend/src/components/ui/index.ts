@@ -21,3 +21,9 @@ export type { ToggleProps } from "./Toggle";
 
 export { Slider } from "./Slider";
 export type { SliderProps } from "./Slider";
+
+export { FloatingActionButton } from "./FloatingActionButton";
+export type {
+  FloatingActionButtonProps,
+  FloatingAction,
+} from "./FloatingActionButton";
