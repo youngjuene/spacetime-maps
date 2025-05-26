@@ -1,5 +1,6 @@
 import React from "react";
-import { Container, Stage, Text } from "@pixi/react";
+import { Canvas } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import { SpacetimeMap } from "./SpacetimeMap";
 import { ViewSettings } from "../viewSettings";
 import {
@@ -96,35 +97,48 @@ const CityMapSlot: React.FC<{
 
       {/* Map Content */}
       <div className="relative">
-        <Stage
-          width={mapSizePx}
-          height={mapSizePx}
-          options={{
-            autoDensity: true,
-            backgroundColor: 0xf8fafc,
+        <Canvas
+          style={{ width: mapSizePx, height: mapSizePx }}
+          orthographic
+          camera={{
+            left: -mapSizePx / 2,
+            right: mapSizePx / 2,
+            top: mapSizePx / 2,
+            bottom: -mapSizePx / 2,
+            near: 0.1,
+            far: 1000,
+            position: [0, 0, 1],
+          }}
+          gl={{
+            antialias: true,
+            alpha: true,
+          }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0xf8fafc, 1);
           }}
         >
           {slot.isLoading && (
-            <Container>
-              <Text
-                text="Loading..."
-                anchor={0.5}
-                x={mapSizePx / 2}
-                y={mapSizePx / 2}
-              />
-            </Container>
+            <Text
+              position={[0, 0, 0]}
+              fontSize={24}
+              color="black"
+              anchorX="center"
+              anchorY="middle"
+            >
+              Loading...
+            </Text>
           )}
 
           {slot.error && (
-            <Container>
-              <Text
-                text={`Error: ${slot.error}`}
-                anchor={0.5}
-                x={mapSizePx / 2}
-                y={mapSizePx / 2}
-                style={{ fill: 0xff0000, fontSize: 12 } as any}
-              />
-            </Container>
+            <Text
+              position={[0, 0, 0]}
+              fontSize={12}
+              color="red"
+              anchorX="center"
+              anchorY="middle"
+            >
+              {`Error: ${slot.error}`}
+            </Text>
           )}
 
           {slot.city && !slot.isLoading && !slot.error && (
@@ -136,7 +150,7 @@ const CityMapSlot: React.FC<{
               onTick={onTick}
             />
           )}
-        </Stage>
+        </Canvas>
 
         {/* Loading Overlay */}
         {slot.isLoading && (

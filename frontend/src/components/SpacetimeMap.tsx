@@ -1,4 +1,4 @@
-import { Container, useTick } from "@pixi/react";
+import { useFrame } from "@react-three/fiber";
 
 import { useEffect, useMemo, useState } from "react";
 import { Point, VertexPosition, getMesh } from "../mesh";
@@ -12,9 +12,9 @@ import { useMapSizePx } from "../useIsMobile";
 import { ViewSettings } from "../viewSettings";
 
 /**
- * Create a mesh of triangles from individual <SimpleMesh>es.
- * Originally, I had everything in one big <SimpleMesh>, but I ran into a bug where this
- * would break for larger mesh sizes: https://github.com/pixijs/pixijs/issues/9646
+ * Create a mesh of triangles from individual MeshTriangle components.
+ * Originally used PIXI.js SimpleMesh, now uses Three.js with React Three Fiber.
+ * Each triangle is rendered as a separate component to avoid rendering issues.
  */
 const createMeshTriangles = (
   vertexPositions: VertexPosition[],
@@ -24,13 +24,14 @@ const createMeshTriangles = (
   city: City
 ) => {
   let meshTriangles = triangles.map((triangle, i) => {
+    // Convert normalized coordinates to Three.js world coordinates
     const curVertices = new Float32Array([
-      vertexPositions[triangle[0]].x * mapSizePx,
-      vertexPositions[triangle[0]].y * mapSizePx,
-      vertexPositions[triangle[1]].x * mapSizePx,
-      vertexPositions[triangle[1]].y * mapSizePx,
-      vertexPositions[triangle[2]].x * mapSizePx,
-      vertexPositions[triangle[2]].y * mapSizePx,
+      (vertexPositions[triangle[0]].x - 0.5) * mapSizePx,
+      (0.5 - vertexPositions[triangle[0]].y) * mapSizePx, // Flip Y for Three.js
+      (vertexPositions[triangle[1]].x - 0.5) * mapSizePx,
+      (0.5 - vertexPositions[triangle[1]].y) * mapSizePx,
+      (vertexPositions[triangle[2]].x - 0.5) * mapSizePx,
+      (0.5 - vertexPositions[triangle[2]].y) * mapSizePx,
     ]);
 
     const curUvs = new Float32Array([
@@ -139,8 +140,9 @@ export const SpacetimeMap = ({
     setVertexPositions(initialPositions);
   }, [initialPositions]);
 
-  useTick((delta) => {
-    const deltaSeconds = delta / 60;
+  // Use useFrame instead of useTick for Three.js animation loop
+  useFrame((state, delta) => {
+    const deltaSeconds = delta; // delta is already in seconds in Three.js
 
     onTick(deltaSeconds);
 
@@ -168,7 +170,7 @@ export const SpacetimeMap = ({
 
   return (
     <>
-      <Container>
+      <group>
         {meshTriangles}
         <DebugOverlay
           vertexPositions={vertexPositions}
@@ -178,7 +180,7 @@ export const SpacetimeMap = ({
           normalizedHoveredPoint={normalizedHoveredPoint}
           mapSizePx={mapSizePx}
         />
-      </Container>
+      </group>
     </>
   );
 };

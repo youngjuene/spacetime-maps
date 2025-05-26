@@ -492,7 +492,13 @@ runner.test("Package.json Dependencies", () => {
   const content = runner.readFile("package.json");
   const packageJson = JSON.parse(content);
 
-  const requiredDeps = ["@pixi/react", "react", "typescript"];
+  const requiredDeps = [
+    "@react-three/fiber",
+    "@react-three/drei",
+    "three",
+    "react",
+    "typescript",
+  ];
   for (const dep of requiredDeps) {
     if (
       !packageJson.dependencies?.[dep] &&

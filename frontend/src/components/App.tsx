@@ -1,4 +1,5 @@
-import { Container, Stage, Text } from "@pixi/react";
+import { Canvas } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import { SpacetimeMap } from "./SpacetimeMap";
 import { useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
@@ -268,25 +269,37 @@ const App = () => {
             </div>
           </div>
         )}
-        {/* The <Stage> wrapper must live outside of the SpacetimeMap component
-            for useTick() to work. */}
-        <Stage
-          width={mapSizePx}
-          height={mapSizePx}
-          options={{
-            autoDensity: true,
-            backgroundColor: 0xf8fafc, // neutral-50 in hex
+        {/* The Canvas wrapper replaces the PIXI Stage component */}
+        <Canvas
+          style={{ width: mapSizePx, height: mapSizePx }}
+          orthographic
+          camera={{
+            left: -mapSizePx / 2,
+            right: mapSizePx / 2,
+            top: mapSizePx / 2,
+            bottom: -mapSizePx / 2,
+            near: 0.1,
+            far: 1000,
+            position: [0, 0, 1],
+          }}
+          gl={{
+            antialias: true,
+            alpha: true,
+          }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0xf8fafc, 1); // neutral-50 in hex
           }}
         >
           {city === null && (
-            <Container>
-              <Text
-                text="Loading..."
-                anchor={0.5}
-                x={mapSizePx / 2}
-                y={mapSizePx / 2}
-              />
-            </Container>
+            <Text
+              position={[0, 0, 0]}
+              fontSize={24}
+              color="black"
+              anchorX="center"
+              anchorY="middle"
+            >
+              Loading...
+            </Text>
           )}
           {!(city === null) && (
             <SpacetimeMap
@@ -299,7 +312,7 @@ const App = () => {
               onTick={onTick}
             />
           )}
-        </Stage>
+        </Canvas>
         {/* Place an invisible div over the canvas to intercept mouse events.
             This fixes drag-to-scroll on not working on mobile. */}
         <div className="absolute top-0 left-0 w-full h-full z-10"></div>
