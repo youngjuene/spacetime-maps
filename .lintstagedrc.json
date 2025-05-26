@@ -1,0 +1,5 @@
+{
+  "frontend/src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "backend/**/*.py": ["black --check", "isort --check-only"],
+  "*.{json,md,yml,yaml}": ["prettier --write"]
+}

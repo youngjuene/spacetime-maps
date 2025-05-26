@@ -8,9 +8,13 @@ import tqdm.auto as tqdm
 import requests
 
 from .location import Location
+from .cache import FileBasedCache
 
 
 logger = logging.getLogger(__name__)
+
+# Initialize global cache instance
+cache = FileBasedCache()
 
 
 class TravelMode(StrEnum):
@@ -109,6 +113,16 @@ def call_distance_matrix_api(
     confirm: bool = True,
     travel_mode: TravelMode = TravelMode.DRIVE,
 ):
+    # Check cache first
+    cached_result = cache.get(origins, destinations, travel_mode)
+    if cached_result:
+        print(f"🎯 Cache hit! Saved API call for {len(origins)}x{len(destinations)} matrix")
+        # Create a mock response object that behaves like requests.Response
+        class MockResponse:
+            def json(self):
+                return cached_result
+        return MockResponse()
+
     if confirm:
         confirm_if_expensive(origins, destinations)
 
@@ -134,9 +148,25 @@ def call_distance_matrix_api(
             continue
 
         response.raise_for_status()
+        
+        # Cache the successful result
+        result = response.json()
+        cache.set(origins, destinations, travel_mode, result)
+        print(f"💾 Cached result for {len(origins)}x{len(destinations)} matrix")
+        
         return response
 
     raise RuntimeError("Rate limit exceeded")
+
+
+def get_cache_stats():
+    """Get cache statistics for monitoring"""
+    return cache.get_stats()
+
+
+def clear_expired_cache():
+    """Clear expired cache entries"""
+    return cache.clear_expired()
 
 
 def get_distance_matrix(
