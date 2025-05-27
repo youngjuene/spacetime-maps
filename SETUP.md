@@ -70,6 +70,38 @@ cd backend
 pip install -r requirements.txt
 ```
 
+### **Option 3: Docker Development (Recommended for Teams)**
+
+**Prerequisites:** Docker & Docker Compose
+
+```bash
+# Development with hot reload
+docker-compose --profile dev up
+
+# Production build
+docker-compose --profile prod up
+
+# Full stack (frontend + backend)
+docker-compose --profile full up
+```
+
+### **Option 4: Production Deployment**
+
+**Vercel (Recommended):**
+
+```bash
+cd frontend
+npm run build
+# Deploy build/ folder to Vercel
+```
+
+**Docker Production:**
+
+```bash
+docker build -t spacetime-maps .
+docker run -p 80:80 spacetime-maps
+```
+
 ---
 
 ## 🗝️ **Google Maps API Setup**
@@ -144,8 +176,13 @@ print('✅ Travel time data generated!')
 
 ```bash
 cd frontend
-npm run dev      # Development server
-npm run build    # Production build
+npm run dev          # Development server
+npm run build        # Production build
+npm run test         # Run tests
+npm run test:ui      # Test UI
+npm run lint         # Lint code
+npm run format       # Format code
+npm run type-check   # TypeScript check
 ```
 
 ### **Backend Development**
@@ -155,6 +192,17 @@ cd backend
 poetry shell                    # Activate environment
 poetry add package_name         # Add dependency
 poetry run jupyter notebook     # Start Jupyter
+```
+
+### **Quality Assurance**
+
+```bash
+# Run all checks
+npm run lint && npm run type-check && npm run test
+
+# Performance testing
+npm run build && npm run preview
+# Then run Lighthouse on http://localhost:4173
 ```
 
 ### **Adding New Cities**
@@ -173,12 +221,82 @@ export const CITIES = {
 
 ---
 
+## 🚀 **Production Deployment**
+
+### **Environment Configuration**
+
+Copy `frontend/env.example` to `frontend/.env`:
+
+```bash
+cp frontend/env.example frontend/.env
+# Edit .env with your configuration
+```
+
+### **Build Optimization**
+
+```bash
+cd frontend
+npm run build
+
+# Check bundle size
+npm run analyze
+
+# Test production build locally
+npm run preview
+```
+
+### **Deployment Options**
+
+#### **Vercel (Recommended)**
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+cd frontend
+vercel --prod
+```
+
+#### **Netlify**
+
+```bash
+cd frontend
+npm run build
+# Drag build/ folder to Netlify dashboard
+```
+
+#### **Docker Production**
+
+```bash
+# Build production image
+docker build -t spacetime-maps .
+
+# Run with environment variables
+docker run -p 80:80 \
+  -e NODE_ENV=production \
+  spacetime-maps
+```
+
+#### **Static Hosting**
+
+```bash
+cd frontend
+npm run build
+# Upload build/ folder to any static host
+# (GitHub Pages, AWS S3, etc.)
+```
+
+---
+
 ## 🔍 **Troubleshooting**
 
 ### **Frontend Issues**
 
 - **Port in use**: Vite auto-uses next port (5174, 5175, etc.)
 - **Build errors**: `rm -rf node_modules package-lock.json && npm install`
+- **Large bundle**: Check `npm run analyze` for optimization opportunities
+- **Performance**: Enable performance monitor in app settings
 
 ### **Backend Issues**
 
@@ -186,42 +304,72 @@ export const CITIES = {
 - **Import errors**: Make sure you're in `backend/` directory
 - **API errors**: Verify `echo $GMAPS_API_KEY` shows your key
 
+### **Docker Issues**
+
+- **Build fails**: Check Docker has enough memory (4GB+)
+- **Port conflicts**: Change ports in docker-compose.yml
+- **Permission errors**: Run with `sudo` on Linux
+
 ### **Performance Issues**
 
-- Enable performance monitor in app settings
-- Try different quality settings
-- Check browser console for errors
+- **Slow loading**: Check network tab for large assets
+- **Low FPS**: Try different quality settings in app
+- **Memory leaks**: Refresh page, check browser console
 
 ---
 
 ## 📊 **System Requirements**
 
-**Minimum:**
+### **Development**
 
-- Node.js 18.x+, 2GB RAM, Modern browser
+- **Node.js**: 20.x LTS
+- **RAM**: 4GB minimum, 8GB recommended
+- **Storage**: 2GB for dependencies
+- **Browser**: Chrome 90+, Firefox 88+, Safari 14+
 
-**Recommended:**
+### **Production**
 
-- Node.js 20.x LTS, 4GB RAM, Dedicated graphics card
-
----
-
-## 🚀 **Deployment**
-
-### **Static Hosting (Frontend Only)**
-
-```bash
-cd frontend
-npm run build
-# Deploy frontend/build/ to Vercel, Netlify, GitHub Pages, etc.
-```
+- **Server**: 1GB RAM, 1 CPU core minimum
+- **CDN**: Recommended for global performance
+- **HTTPS**: Required for modern browser features
 
 ### **Performance Expectations**
 
-- Initial Load: <2s on modern devices
-- Frame Rate: 60 FPS desktop, 30+ FPS mobile
-- Bundle Size: <1MB gzipped
-- Memory Usage: <100MB typical
+- **Initial Load**: <2s on modern devices
+- **Frame Rate**: 60 FPS desktop, 30+ FPS mobile
+- **Bundle Size**: <1MB gzipped
+- **Memory Usage**: <100MB typical
+
+---
+
+## 🛡️ **Security & Stability**
+
+### **Error Handling**
+
+- **Error Boundaries**: Automatic error recovery
+- **Graceful Degradation**: Fallbacks for WebGL issues
+- **Performance Monitoring**: Real-time FPS tracking
+
+### **Security Features**
+
+- **CSP Headers**: Content Security Policy
+- **HTTPS Only**: Secure connections required
+- **No Sensitive Data**: All data is public
+- **Dependency Scanning**: Automated vulnerability checks
+
+### **Monitoring**
+
+```bash
+# Performance monitoring
+npm run build && npm run preview
+# Open http://localhost:4173 and check DevTools
+
+# Bundle analysis
+npm run analyze
+
+# Lighthouse testing
+npx lighthouse http://localhost:4173 --view
+```
 
 ---
 
@@ -232,5 +380,8 @@ npm run build
 3. **Use shortcuts**: Space for play/pause, arrows for navigation
 4. **Enable monitoring**: See real-time FPS and memory usage
 5. **Try multi-city**: Compare cities side-by-side
+6. **Check performance**: Use browser DevTools for optimization
+7. **Use Docker**: For consistent development environment
+8. **Monitor errors**: Check browser console for issues
 
 **Happy mapping! 🗺️✨**

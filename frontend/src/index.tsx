@@ -3,13 +3,17 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { Router } from "./components/Router";
+import { AppErrorBoundary } from "./components/ErrorBoundary";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <Router />
+    <AppErrorBoundary>
+      <Router />
+    </AppErrorBoundary>
   </React.StrictMode>
 );
 
