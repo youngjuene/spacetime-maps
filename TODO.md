@@ -1,267 +1,148 @@
-# Spacetime Maps - Updated TODO & Roadmap
+# Spacetime Maps - Development Roadmap
 
-## ✅ **COMPLETED (Phases 1-3)**
+## ✅ **COMPLETED**
 
-### **Phase 1: Foundation & Quick Wins** ✅
+### **Core Features (Phases 1-3)**
 
-- ✅ **API Response Caching** - FileBasedCache implementation (30-50% cost reduction)
-- ✅ **Modern Color Theme System** - Comprehensive design system with primary/accent colors
-- ✅ **UI Component Library** - Button, Card, Input, LoadingSpinner, Dropdown, Slider, Toggle
-- ✅ **Development Environment** - TypeScript 5.0, ESLint 8.0, Prettier 3.0, Husky 8.0
-
-### **Phase 2: Enhanced Interactivity** ✅
-
-- ✅ **Enhanced Menu System** - ModernMenu with SpaceTimeProgressBar
-- ✅ **Interactive Controls** - Dropdown, Slider, Toggle with modern styling
-- ✅ **Keyboard Shortcuts** - Comprehensive shortcuts for animation, visual, navigation
-- ✅ **Touch Gestures** - Swipe, pinch, double-tap, long-press support
-- ✅ **Mobile Optimization** - FloatingActionButton, responsive design
-
-### **Phase 3: Advanced Features** ✅
-
-- ✅ **Animation Controls** - Play/pause/stop, speed control (0.25x-3x), direction control
-- ✅ **Multi-City Comparison** - Side-by-side comparison, grid/horizontal/vertical layouts
-- ✅ **Timeline Scrubbing** - Click-to-set position with real-time feedback
-- ✅ **Synchronized Animation** - Option to sync all cities or control individually
+- ✅ **API Response Caching** - 50-70% cost reduction
+- ✅ **Modern UI System** - React + Three.js with responsive design
+- ✅ **Interactive Controls** - Animation, timeline scrubbing, keyboard shortcuts
+- ✅ **Multi-City Comparison** - Side-by-side visualization with sync options
+- ✅ **Mobile Optimization** - Touch gestures, floating controls
+- ✅ **Performance Monitoring** - Real-time FPS and memory tracking
 
 **Test Results**: ✅ **100% Success Rate** (31/31 tests passed)
 
 ---
 
-## 🚀 **CURRENT PRIORITIES (Phase 4-5)**
+## 🚀 **CURRENT PRIORITIES**
 
-## 🔧 **Phase 4: Library Updates & Modernization** (Weeks 1-4)
+### **Phase 4: Library Updates** (In Progress)
 
-### **Week 1: High-Risk Updates** 🔴
+- ✅ **Three.js Migration** - Completed PIXI.js → Three.js conversion
+- 🔄 **Vite 5.0 Update** - Configuration modernization
+- 🔄 **TypeScript 5.4** - Enhanced type inference
+- 🔄 **ESLint 9.0** - Flat config migration
+- 🔄 **React 19** - Concurrent features when available
 
-#### **Three.js Migration** (COMPLETED ✅)
+### **Phase 5: Advanced Features** (Planned)
 
-- [x] **Created Three.js Compatibility Layer**
-  ```typescript
-  // frontend/src/three/compatibility.ts
-  export class ThreeCompatibilityLayer {
-    static createRenderer(options: any) {
-      /* WebGL renderer with compatibility options */
-    }
-    static createMesh(geometry: any, material: any) {
-      /* Mesh creation with texture support */
-    }
-  }
-  ```
-- [x] **Migrated SpacetimeMap Component** - Successfully converted to React Three Fiber
-- [x] **Updated MeshTriangle Component** - Converted to Three.js with texture mapping
-- [x] **Converted DebugOverlay Component** - Migrated all PIXI Graphics to Three.js
-- [x] **Updated Dependencies** - Replaced PIXI.js with Three.js and React Three Fiber
+#### **Performance & Scalability**
 
-#### **Vite 4.5.0 → 5.0.0** (Configuration Changes)
-
-- [ ] **Update vite.config.js** - New v5 configuration format
-- [ ] **Build Target Updates** - ESNext target, updated rollup options
-- [ ] **Dev Server Configuration** - Handle new server options
-- [ ] **Plugin Compatibility** - Ensure all plugins work with v5
-
-### **Week 2: Core Dependencies** 🟡
-
-#### **TypeScript 5.0.0 → 5.4.0**
-
-- [ ] **Leverage New Features** - Improved type inference, better error messages
-- [ ] **Update Type Definitions** - @types/react@^18.3.0, @types/react-dom@^18.3.0
-- [ ] **Code Modernization** - Use new utility types and language features
-
-#### **React 18.2.0 → 18.3.0/19.0.0** (When Available)
-
-- [ ] **Concurrent Features** - Implement startTransition for non-urgent updates
-- [ ] **Error Boundaries** - Enhanced error handling with react-error-boundary
-- [ ] **Performance Optimization** - React.memo, useMemo, useCallback optimizations
-
-#### **ESLint 8.0 → 9.0** (Flat Config Migration)
-
-- [ ] **Migrate to Flat Config** - New eslint.config.js format
-- [ ] **Update Rules** - Migrate existing rules to new format
-- [ ] **Plugin Updates** - Ensure compatibility with ESLint 9.0
-
-### **Week 3: Code Refactoring** 🟢
-
-#### **Modern React Patterns**
-
-- [ ] **Implement useOptimizedState Hook**
-  ```typescript
-  // frontend/src/hooks/useOptimizedState.ts
-  export function useOptimizedState<T>(initialState: T) {
-    // Implement concurrent features with startTransition
-  }
-  ```
-- [ ] **Enhanced Error Boundaries**
-  ```typescript
-  // frontend/src/components/ErrorBoundary.tsx
-  export function AppErrorBoundary({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) {
-    // Implement with react-error-boundary
-  }
-  ```
-- [ ] **Performance Optimization**
-  ```typescript
-  // frontend/src/components/OptimizedSpacetimeMap.tsx
-  export const OptimizedSpacetimeMap = memo(
-    ({ viewSettings, timeness, city }) => {
-      const memoizedMapData = useMemo(
-        () => processMapData(city, viewSettings),
-        [city, viewSettings]
-      );
-      return <SpacetimeMap data={memoizedMapData} timeness={timeness} />;
-    }
-  );
-  ```
-
-#### **Component Architecture Improvements**
-
-- [ ] **Lazy Loading** - Implement React.lazy for large components
-- [ ] **Code Splitting** - Split animation controls and multi-city comparison
-- [ ] **Bundle Optimization** - Reduce chunk sizes, improve loading times
-
-### **Week 4: Backend Modernization** 🟢
-
-#### **Python 3.9+ → 3.12**
-
-- [ ] **Update pyproject.toml** - Python ^3.12, Pydantic ^2.7.0
-- [ ] **Modern Python Features** - Use new union syntax (T | None), improved type hints
-- [ ] **Async Cache Implementation**
-  ```python
-  # backend/backend/modern_cache.py
-  class AsyncCache(Generic[T]):
-      async def get(self, key: str) -> T | None: pass
-      async def set(self, key: str, value: T, ttl: int = 3600) -> None: pass
-  ```
-
-#### **FastAPI Migration** (Optional)
-
-- [ ] **Evaluate FastAPI Migration** - From current backend to FastAPI
-- [ ] **API Endpoint Modernization** - Async endpoints, better error handling
-- [ ] **Documentation** - Auto-generated API docs with FastAPI
-
----
-
-## 🚀 **Phase 5: Advanced Features & Optimization** (Weeks 5-8)
-
-### **Performance & Scalability** 🔥
-
-#### **Advanced Caching Strategies**
-
-- [ ] **Redis Integration** - Replace file-based cache with Redis for production
-- [ ] **Cache Warming** - Intelligent pre-loading of popular routes
-- [ ] **Distributed Caching** - Multi-region cache for global performance
-- [ ] **Cache Analytics** - Monitor hit rates, optimize TTL strategies
-
-#### **API Cost Optimization 2.0**
-
-- [ ] **Smart Grid Generation** - Incremental updates instead of full regeneration
-- [ ] **Batch Optimization** - Increase batch sizes to API limits (25×25)
-- [ ] **Geographic Clustering** - Spatial clustering to group nearby requests
-- [ ] **Alternative Data Sources** - OpenStreetMap integration for basic calculations
-
-#### **Computational Efficiency**
-
-- [ ] **Floyd-Warshall Optimization** - Sparse matrices, parallel processing
-- [ ] **Data Format Optimization** - MessagePack/Protocol Buffers instead of JSON
-- [ ] **Spatial Indexing** - R-tree for efficient geographic queries
-
-### **Advanced User Experience** 🎨
+- [ ] **Redis Caching** - Replace file-based cache for production
+- [ ] **Smart Grid Generation** - Incremental updates vs full regeneration
+- [ ] **Geographic Clustering** - Spatial optimization for API requests
+- [ ] **Alternative Data Sources** - OpenStreetMap integration
 
 #### **Real-time Features**
 
-- [ ] **Live Traffic Integration** - Real-time traffic data affecting travel times
-- [ ] **Weather Impact** - Weather-based travel time adjustments
-- [ ] **Event-based Adjustments** - Concerts, sports events affecting routes
+- [ ] **Live Traffic Integration** - Dynamic travel time updates
+- [ ] **Weather Impact** - Weather-based route adjustments
+- [ ] **Event Integration** - Concerts/sports affecting travel times
 
-#### **Collaboration Features**
+#### **Collaboration**
 
-- [ ] **Real-time Collaboration** - Live cursor sharing between users
-- [ ] **Shared Annotations** - Collaborative map annotations and POIs
 - [ ] **Session Sharing** - Share map states via URLs
+- [ ] **Real-time Collaboration** - Live cursor sharing
+- [ ] **Shared Annotations** - Collaborative POI marking
 
 #### **Advanced Interaction**
 
 - [ ] **Voice Commands** - "Show me travel time from Central Park"
-- [ ] **Custom Gestures** - Advanced gesture recognition
-- [ ] **AR/VR Integration** - Experimental AR overlay for mobile
-
-### **Analytics & Monitoring** 📊
-
-#### **Performance Monitoring**
-
-- [ ] **Real-time Performance Dashboard** - Monitor API costs, response times
-- [ ] **User Behavior Analytics** - Track feature usage, optimize UX
-- [ ] **Error Tracking** - Comprehensive error monitoring and alerting
-
-#### **Business Intelligence**
-
-- [ ] **Usage Patterns Analysis** - Identify popular routes and times
-- [ ] **Cost Optimization Insights** - Data-driven cost reduction strategies
-- [ ] **Feature Adoption Metrics** - Track new feature usage and success
+- [ ] **AR Integration** - Experimental mobile AR overlay
+- [ ] **Custom Gestures** - Advanced touch recognition
 
 ---
 
-## 🎯 **Success Metrics & KPIs**
+## 🔧 **TECHNICAL DEBT**
 
-### **Technical Metrics**
+### **High Priority**
 
-- **API Cost Reduction**: Target 70-80% (currently 50% achieved)
-- **Performance**: <2s initial load, <500ms interactions
-- **Bundle Size**: <1MB gzipped main bundle
-- **Test Coverage**: >90% for critical components
+- [ ] **Bundle Size Optimization** - Code splitting for large components
+- [ ] **Error Boundary Enhancement** - Better error handling with react-error-boundary
+- [ ] **Accessibility Improvements** - ARIA labels, keyboard navigation
+- [ ] **Test Coverage** - Increase from current 31 tests
 
-### **User Experience Metrics**
+### **Medium Priority**
 
-- **Session Duration**: Target 3x increase (baseline: 2 minutes)
-- **Feature Adoption**: >60% users try animation controls
-- **Mobile Usage**: >40% of total sessions
-- **User Retention**: >70% return within 7 days
+- [ ] **FastAPI Migration** - Modern Python backend (optional)
+- [ ] **Docker Support** - Containerized deployment
+- [ ] **CI/CD Pipeline** - Automated testing and deployment
+- [ ] **Documentation** - API docs, component library docs
 
-### **Development Metrics**
+### **Low Priority**
 
-- **Build Time**: <30s for development builds
-- **Type Safety**: 100% TypeScript coverage
-- **Code Quality**: ESLint score >95%
-- **Documentation**: All public APIs documented
-
----
-
-## 🔄 **Continuous Improvement**
-
-### **Monthly Reviews**
-
-- [ ] **Performance Audits** - Lighthouse scores, Core Web Vitals
-- [ ] **Security Updates** - Dependency updates, vulnerability scans
-- [ ] **User Feedback Integration** - Feature requests, bug reports
-- [ ] **Cost Analysis** - API usage patterns, optimization opportunities
-
-### **Quarterly Goals**
-
-- [ ] **Major Feature Releases** - New visualization modes, advanced controls
-- [ ] **Platform Expansion** - PWA features, offline capabilities
-- [ ] **Accessibility Improvements** - WCAG 2.1 AA compliance
+- [ ] **PWA Features** - Offline capabilities, service workers
 - [ ] **Internationalization** - Multi-language support
+- [ ] **Theme System** - Dark/light mode toggle
+- [ ] **Analytics Integration** - User behavior tracking
 
 ---
 
-## 📝 **Implementation Notes**
+## 🎯 **FEATURE REQUESTS**
 
-### **Risk Mitigation**
+### **User Experience**
 
-- **Feature Flags** - Gradual rollout of new features
-- **Rollback Strategy** - Quick revert capability for breaking changes
-- **Testing Strategy** - Comprehensive test suite before major updates
-- **Monitoring** - Real-time alerts for performance degradation
+- [ ] **Bookmark System** - Save favorite city configurations
+- [ ] **Export Features** - PNG/SVG export of visualizations
+- [ ] **Tutorial Mode** - Interactive onboarding
+- [ ] **Comparison Tools** - Statistical analysis between cities
 
-### **Development Workflow**
+### **Data & Visualization**
 
-- **Branch Strategy** - feature/library-updates, feature/advanced-features
-- **Code Review** - Mandatory reviews for all changes
-- **CI/CD Pipeline** - Automated testing, building, deployment
-- **Documentation** - Keep README.md and docs updated
+- [ ] **Historical Data** - Time-series travel time analysis
+- [ ] **Custom POIs** - User-defined points of interest
+- [ ] **Route Visualization** - Show actual routes, not just times
+- [ ] **Heatmap Mode** - Alternative visualization style
 
-**Last Updated**: Current (Post Phase 1-3 completion)
-**Next Review**: After Phase 4 completion
+### **Integration**
+
+- [ ] **Google Maps Integration** - Embed actual map tiles
+- [ ] **Public Transit APIs** - Real-time transit data
+- [ ] **Social Sharing** - Share visualizations on social media
+- [ ] **Embedding** - Iframe embeds for other websites
+
+---
+
+## 📊 **METRICS & GOALS**
+
+### **Performance Targets**
+
+- **Bundle Size**: <1MB gzipped (current: ~800KB)
+- **Initial Load**: <2s on 3G (current: ~1.5s)
+- **Frame Rate**: 60 FPS desktop, 30+ FPS mobile (achieved)
+- **API Cost**: <$10/month for typical usage (achieved via caching)
+
+### **User Experience Goals**
+
+- **Mobile Usage**: 50%+ of traffic
+- **Session Duration**: >5 minutes average
+- **Feature Adoption**: 80%+ users try multi-city comparison
+- **Error Rate**: <1% of sessions
+
+### **Technical Goals**
+
+- **Test Coverage**: >90% (current: basic coverage)
+- **Accessibility Score**: >95% (current: ~80%)
+- **SEO Score**: >90% (current: ~85%)
+- **Security Score**: 100% (current: 100%)
+
+---
+
+## 🚀 **GETTING STARTED**
+
+### **For Contributors**
+
+1. Check [SETUP.md](SETUP.md) for development environment
+2. Pick an issue from "High Priority" technical debt
+3. Follow the existing code patterns and TypeScript strict mode
+4. Add tests for new features
+5. Update documentation
+
+### **For Users**
+
+- **Report Bugs**: Use GitHub issues
+- **Feature Requests**: Use GitHub discussions
+- **Performance Issues**: Enable performance monitor and report stats
+
+**Ready to contribute? Start with the setup guide and pick a task! 🗺️✨**

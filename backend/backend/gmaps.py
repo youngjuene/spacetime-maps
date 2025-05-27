@@ -1,15 +1,14 @@
-from enum import StrEnum
+import logging
 import os
 import time
-from typing import Callable, Iterable, TypedDict
-import logging
+from enum import Enum
+from typing import Callable, Iterable, TypedDict, Union
 
-import tqdm.auto as tqdm
 import requests
+import tqdm.auto as tqdm
 
-from .location import Location
 from .cache import FileBasedCache
-
+from .location import Location
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 cache = FileBasedCache()
 
 
-class TravelMode(StrEnum):
+class TravelMode(str, Enum):
     DRIVE = "DRIVE"
     TRANSIT = "TRANSIT"
     WALK = "WALK"
@@ -30,7 +29,7 @@ def get_api_key():
 def get_static_map(
     center: Location,
     zoom: int,
-    markers: list[Location] | None = None,
+    markers: Union[list[Location], None] = None,
     size_pixels: int = 400,
     scale: int = 2,
 ) -> bytes:
@@ -116,11 +115,14 @@ def call_distance_matrix_api(
     # Check cache first
     cached_result = cache.get(origins, destinations, travel_mode)
     if cached_result:
-        print(f"🎯 Cache hit! Saved API call for {len(origins)}x{len(destinations)} matrix")
+        print(
+            f"🎯 Cache hit! Saved API call for {len(origins)}x{len(destinations)} matrix"
+        )
         # Create a mock response object that behaves like requests.Response
         class MockResponse:
             def json(self):
                 return cached_result
+
         return MockResponse()
 
     if confirm:
@@ -148,12 +150,12 @@ def call_distance_matrix_api(
             continue
 
         response.raise_for_status()
-        
+
         # Cache the successful result
         result = response.json()
         cache.set(origins, destinations, travel_mode, result)
         print(f"💾 Cached result for {len(origins)}x{len(destinations)} matrix")
-        
+
         return response
 
     raise RuntimeError("Rate limit exceeded")

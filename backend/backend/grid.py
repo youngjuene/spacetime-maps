@@ -1,8 +1,9 @@
-import math
-from typing import Literal, TypedDict
-from pydantic import BaseModel
-import tqdm.auto as tqdm
 import logging
+import math
+from typing import Literal, TypedDict, Union
+
+import tqdm.auto as tqdm
+from pydantic import BaseModel
 
 from backend.gmaps import TravelMode, get_sparsified_distance_matrix, snap_to_road
 from backend.location import Location, NormalizedLocation, get_mercator_scale_factor
@@ -18,8 +19,8 @@ class GridLocation(BaseModel):
     snapped_location: Location
     grid_x: int
     grid_y: int
-    snap_result_types: list[str] | None
-    snap_result_place_id: str | None
+    snap_result_types: Union[list[str], None]
+    snap_result_place_id: Union[str, None]
 
 
 class RouteMatrixEntry(TypedDict):
@@ -59,7 +60,7 @@ class Grid:
         self.travel_mode = travel_mode
 
         self.locations: list[GridLocation] = []
-        self.route_matrix: list[RouteMatrixEntry] | None = None
+        self.route_matrix: Union[list[RouteMatrixEntry], None] = None
 
         raw_grid = make_grid(center, zoom, size, size_pixels)
 
