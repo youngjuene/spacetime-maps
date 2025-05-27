@@ -11,8 +11,8 @@ COPY frontend/vite.config.ts ./
 COPY frontend/tailwind.config.js ./
 COPY frontend/postcss.config.js ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
 
 # Copy source code
 COPY frontend/src ./src
@@ -24,6 +24,9 @@ RUN npm run build
 
 # Production stage
 FROM nginx:alpine AS production
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
 # Copy custom nginx config
 COPY <<EOF /etc/nginx/conf.d/default.conf
