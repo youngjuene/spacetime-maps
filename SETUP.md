@@ -1,4 +1,4 @@
-# Spacetime Maps - Setup Guide
+# Soft Mobility Spacetime Maps - Setup Guide
 
 ## 🚀 **Quick Start**
 
@@ -11,14 +11,14 @@ npm run dev
 # Open http://localhost:5173
 ```
 
-**That's it!** The application works completely standalone with pre-existing city data for 15+ cities.
+**That's it!** The application works completely standalone with pre-configured soft mobility data for New York and Daejeon.
 
 ---
 
 ## 🏗️ **Architecture Overview**
 
 - ✅ **Frontend**: React + Three.js application (fully functional standalone)
-- ✅ **Data**: Pre-configured city data (NYC, Prague, London, Zurich, LA, Cairo, Hong Kong, etc.)
+- ✅ **Data**: Pre-configured soft mobility data (NYC & Daejeon: pedestrian, runner, cyclist)
 - ⚠️ **Backend**: Python utilities for data generation (optional, not a web server)
 
 ---
@@ -37,9 +37,10 @@ npm run dev
 
 **Features available:**
 
-- Interactive 3D spacetime maps
+- Interactive 3D soft mobility spacetime maps
+- Single city exploration (pedestrian, runner, cyclist modes)
+- Multi-city comparison (New York vs Daejeon)
 - Animation controls and timeline scrubbing
-- Multi-city comparison (side-by-side, grid layouts)
 - Touch gestures and keyboard shortcuts
 - Performance monitoring
 
@@ -92,21 +93,21 @@ docker-compose --profile full up
 ```bash
 cd frontend
 npm run build
-# Deploy build/ folder to Vercel
+# Deploy dist/ folder to Vercel
 ```
 
 **Docker Production:**
 
 ```bash
-docker build -t spacetime-maps .
-docker run -p 80:80 spacetime-maps
+docker build -t soft-mobility-maps .
+docker run -p 80:80 soft-mobility-maps
 ```
 
 ---
 
 ## 🗝️ **Google Maps API Setup**
 
-Only needed for generating new city data.
+Only needed for generating new city data or expanding to additional cities.
 
 ### **1. Get API Key**
 
@@ -131,15 +132,15 @@ source ~/.zshrc
 cd backend
 poetry shell
 
-# Generate travel time data
+# Generate soft mobility travel time data
 poetry run python -c "
 from backend.gmaps import call_distance_matrix_api, TravelMode
 from backend.location import Location
 
 origins = [Location(lat=40.7128, lng=-74.0060)]  # NYC
 destinations = [Location(lat=40.7589, lng=-73.9851)]  # Times Square
-response = call_distance_matrix_api(origins, destinations, travel_mode=TravelMode.DRIVE)
-print('✅ Travel time data generated!')
+response = call_distance_matrix_api(origins, destinations, travel_mode=TravelMode.WALK)
+print('✅ Soft mobility data generated!')
 "
 ```
 
@@ -151,14 +152,21 @@ print('✅ Travel time data generated!')
 
 - **Mouse/Touch**: Drag to pan, scroll/pinch to zoom
 - **Keyboard**: Space = play/pause, arrows = navigate
+- **Mobile Gestures**: Swipe for navigation, double-tap for comparison
 
-### **Multi-City Comparison**
+### **Soft Mobility Exploration**
 
-1. Click the hamburger menu (☰)
-2. Click "Add City" or the "+" button
-3. Select cities from dropdowns
-4. Choose layout (grid, horizontal, vertical)
-5. Toggle sync animation or control individually
+1. **Single City Mode**:
+
+   - Use menu to select city (New York or Daejeon)
+   - Choose mobility mode (pedestrian, runner, cyclist)
+   - Adjust timeness slider to see spacetime transformation
+
+2. **Comparison Mode**:
+   - Click "Compare Cities" button
+   - Select mobility mode to compare
+   - View side-by-side NY vs Daejeon analysis
+   - Explore efficiency insights and recommendations
 
 ### **Keyboard Shortcuts**
 
@@ -167,6 +175,7 @@ print('✅ Travel time data generated!')
 - `↑/↓` - Increase/decrease animation speed
 - `G` - Toggle grid overlay
 - `M` - Toggle menu
+- `C` - Toggle comparison mode
 
 ---
 

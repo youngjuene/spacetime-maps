@@ -1,26 +1,29 @@
 {
-  "name": "spacetime-maps-frontend",
+  "name": "soft-mobility-maps",
   "version": "1.0.0",
+  "description": "Soft Mobility Spacetime Maps - Visualizing pedestrian, runner, and cyclist mobility in New York and Daejeon",
   "private": true,
   "dependencies": {
-    "@react-three/fiber": "^8.15.12",
     "@react-three/drei": "^9.92.7",
+    "@react-three/fiber": "^8.15.12",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-    "three": "^0.159.0",
+    "clsx": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^4.0.11",
     "react-responsive": "^10.0.1",
     "react-router-dom": "^6.30.1",
+    "tailwind-merge": "^2.6.0",
+    "three": "^0.159.0",
     "usehooks-ts": "^3.1.1",
-    "web-vitals": "^2.1.4",
-    "react-error-boundary": "^4.0.11"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --outDir build/",
+    "build": "tsc && vite build",
     "preview": "vite preview --port 4173",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -31,7 +34,7 @@
     "format": "prettier --write src/**/*.{ts,tsx,css,md}",
     "format:check": "prettier --check src/**/*.{ts,tsx,css,md}",
     "analyze": "npx vite-bundle-analyzer",
-    "clean": "rm -rf build/ node_modules/.vite",
+    "clean": "rm -rf dist/ node_modules/.vite",
     "start": "npm run dev"
   },
   "eslintConfig": {
@@ -58,6 +61,7 @@
     "@types/react-dom": "^18.3.7",
     "@types/three": "^0.159.0",
     "@vitejs/plugin-react": "^4.5.0",
+    "@vitest/coverage-v8": "^1.0.0",
     "@vitest/ui": "^1.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
@@ -68,11 +72,21 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "^1.0.0",
-    "@vitest/coverage-v8": "^1.0.0"
+    "vitest": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
-  }
+  },
+  "keywords": [
+    "soft-mobility",
+    "spacetime-maps",
+    "pedestrian",
+    "cyclist",
+    "runner",
+    "urban-planning",
+    "visualization"
+  ],
+  "author": "Soft Mobility Team",
+  "license": "MIT"
 }

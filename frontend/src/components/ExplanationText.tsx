@@ -14,9 +14,9 @@ export const ExplanationText = () => {
       </p>
       <p>
         This is a map that can show <B>time</B> instead of space. Distances in
-        the map reflect travel times: points that are close but take a long time
-        to travel between (by car) get pushed away from each other, and vice
-        versa.
+        the map reflect travel times for soft mobility: points that are close
+        but take a long time to travel between (walking, running, or cycling)
+        get pushed away from each other, and vice versa.
       </p>
     </>
   );

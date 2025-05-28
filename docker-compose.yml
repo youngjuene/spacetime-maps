@@ -1,5 +1,5 @@
 services:
-  # Frontend development server
+  # Soft Mobility Frontend - Development Mode
   frontend-dev:
     build:
       context: .
@@ -7,6 +7,7 @@ services:
     ports:
       - "5173:5173"
     volumes:
+      # Mount source code for hot reloading
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
       - ./frontend/package.json:/app/package.json
@@ -15,14 +16,27 @@ services:
       - ./frontend/tailwind.config.js:/app/tailwind.config.js
       - ./frontend/postcss.config.js:/app/postcss.config.js
       - ./frontend/index.html:/app/index.html
+      # Exclude node_modules to prevent conflicts
+      - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: npm run dev -- --host 0.0.0.0
+      - VITE_APP_NAME=Soft Mobility Maps
+      - VITE_APP_VERSION=dev
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     profiles:
       - dev
+      - full-dev
+    networks:
+      - soft-mobility-net
 
-  # Frontend production
-  frontend:
+  # Soft Mobility Frontend - Production Mode
+  frontend-prod:
     build:
       context: .
       dockerfile: Dockerfile
@@ -31,11 +45,22 @@ services:
       - "80:80"
     environment:
       - NODE_ENV=production
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=1024
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     profiles:
       - prod
+      - full
+    networks:
+      - soft-mobility-net
 
-  # Backend (optional - for data generation)
+  # Backend for Data Generation (Optional)
   backend:
     build:
       context: ./backend
@@ -45,29 +70,104 @@ services:
     environment:
       - GMAPS_API_KEY=${GMAPS_API_KEY}
       - PYTHONPATH=/app
+      - ENVIRONMENT=development
     volumes:
       - ./backend:/app
       - backend_cache:/app/cache
+      - backend_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     profiles:
       - backend
       - full
+      - full-dev
+    networks:
+      - soft-mobility-net
 
-  # Nginx reverse proxy (for full stack)
-  nginx:
+  # Nginx Reverse Proxy (for full stack deployment)
+  nginx-proxy:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
     depends_on:
-      - frontend
+      - frontend-prod
       - backend
+    environment:
+      - NGINX_WORKER_PROCESSES=auto
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     profiles:
       - full
+    networks:
+      - soft-mobility-net
+
+  # Redis for caching (optional, for performance)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    profiles:
+      - cache
+      - full
+    networks:
+      - soft-mobility-net
+
+  # Database for storing user preferences (optional)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=soft_mobility
+      - POSTGRES_USER=soft_mobility_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-soft_mobility_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soft_mobility_user -d soft_mobility"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    profiles:
+      - database
+      - full
+    networks:
+      - soft-mobility-net
 
 volumes:
   backend_cache:
+    driver: local
+  backend_data:
+    driver: local
+  nginx_logs:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
 
 networks:
-  default:
-    name: spacetime-maps 
+  soft-mobility-net:
+    driver: bridge
+    name: soft-mobility-network

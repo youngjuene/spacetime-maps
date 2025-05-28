@@ -235,27 +235,120 @@ def get_map_dimensions(
 def make_grid(
     center: Location, zoom: int, size: int = 5, size_pixels: int = 400
 ) -> list[list[Location]]:
-    """Make a grid of locations around a center location, for plotting on a map."""
+    """Make a grid of locations around a center point."""
+    lat_offset, lng_offset = get_map_dimensions(center, zoom, size_pixels)
 
-    # If place markers on the map returned get_static_map() such that you move
-    # from the center by STATIC_MAP_SIZE_COEF (adjusted for zoom and Mercator)
-    # in each "diagonal" direction, you will reach the four corners of the map.
-
-    map_size_lat, map_size_lng = get_map_dimensions(
-        center=center, zoom=zoom, size_pixels=size_pixels
+    lat_values = linspace(
+        center.lat - lat_offset / 2, center.lat + lat_offset / 2, size
+    )
+    lng_values = linspace(
+        center.lng - lng_offset / 2, center.lng + lng_offset / 2, size
     )
 
-    locations = []
-    # Reverse the latitude so that the markers go "top to bottom" (north to south)
-    for lat in reversed(
-        linspace(center.lat - map_size_lat / 2, center.lat + map_size_lat / 2, size)
-    ):
-        locations_row = []
-        for lng in linspace(
-            center.lng - map_size_lng / 2, center.lng + map_size_lng / 2, size
-        ):
-            locations_row.append(Location(lat=lat, lng=lng))
+    grid = []
+    for lat in lat_values:
+        row = []
+        for lng in lng_values:
+            row.append(Location(lat=lat, lng=lng))
+        grid.append(row)
 
-        locations.append(locations_row)
+    return grid
 
-    return locations
+
+def generate_grid(center: Location, radius_km: float, grid_size: int) -> list[Location]:
+    """Generate a grid of locations around a center point for API use."""
+    # Convert radius to approximate lat/lng offsets
+    # 1 degree lat ≈ 111 km, 1 degree lng varies by latitude
+    lat_offset = radius_km / 111.0
+    lng_offset = radius_km / (111.0 * math.cos(math.radians(center.lat)))
+    
+    # Create grid points
+    grid_points = []
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Normalize to [-1, 1] range
+            x_norm = (i / (grid_size - 1)) * 2 - 1
+            y_norm = (j / (grid_size - 1)) * 2 - 1
+            
+            # Apply to center with radius
+            lat = center.lat + y_norm * lat_offset
+            lng = center.lng + x_norm * lng_offset
+            
+            grid_points.append(Location(lat=lat, lng=lng))
+    
+    return grid_points
+
+
+def compute_spacetime_grid(
+    center: Location, 
+    grid_points: list[Location], 
+    travel_mode: TravelMode
+) -> dict:
+    """Compute spacetime transformation for grid points."""
+    try:
+        # Get distance matrix from center to all grid points
+        distance_matrix = list(get_sparsified_distance_matrix(
+            [center], 
+            grid_points, 
+            should_include=lambda a, b: True,  # Include all points
+            travel_mode=travel_mode
+        ))
+        
+        # Process results into spacetime coordinates
+        spacetime_points = []
+        for i, point in enumerate(grid_points):
+            # Find corresponding matrix entry
+            travel_time = None
+            for entry in distance_matrix:
+                if (entry.get("originIndex") == 0 and 
+                    entry.get("destinationIndex") == i and
+                    entry.get("condition") == "ROUTE_EXISTS"):
+                    # Extract duration in seconds
+                    duration_str = entry.get("duration", "0s")
+                    travel_time = int(duration_str.rstrip('s'))
+                    break
+            
+            if travel_time is None:
+                travel_time = 0  # Fallback for unreachable points
+            
+            spacetime_points.append({
+                "original_lat": point.lat,
+                "original_lng": point.lng,
+                "travel_time_seconds": travel_time,
+                "travel_time_minutes": travel_time / 60.0,
+                # For spacetime visualization, we can use travel time as a "distance"
+                "spacetime_x": point.lng,  # Keep original for now
+                "spacetime_y": point.lat,  # Keep original for now
+                "reachable": travel_time > 0
+            })
+        
+        return {
+            "points": spacetime_points,
+            "center": {"lat": center.lat, "lng": center.lng},
+            "travel_mode": str(travel_mode),
+            "total_points": len(spacetime_points),
+            "reachable_points": sum(1 for p in spacetime_points if p["reachable"])
+        }
+        
+    except Exception as e:
+        logger.error(f"Error computing spacetime grid: {e}")
+        # Return fallback data
+        return {
+            "points": [
+                {
+                    "original_lat": point.lat,
+                    "original_lng": point.lng,
+                    "travel_time_seconds": 0,
+                    "travel_time_minutes": 0,
+                    "spacetime_x": point.lng,
+                    "spacetime_y": point.lat,
+                    "reachable": False
+                }
+                for point in grid_points
+            ],
+            "center": {"lat": center.lat, "lng": center.lng},
+            "travel_mode": str(travel_mode),
+            "total_points": len(grid_points),
+            "reachable_points": 0,
+            "error": str(e)
+        }
