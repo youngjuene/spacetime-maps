@@ -6,8 +6,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   build: {
-    // Optimize chunk sizes
-    chunkSizeWarningLimit: 1000,
+    // Increase chunk size limit to reduce warnings (large city data files are expected)
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -39,4 +39,6 @@ export default defineConfig({
   optimizeDeps: {
     include: ["react", "react-dom", "three"],
   },
+  // Suppress known warnings
+  logLevel: "warn",
 });

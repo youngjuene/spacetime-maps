@@ -15,6 +15,7 @@ export interface UseKeyboardShortcutsProps {
   setTimeness: (timeness: number) => void;
   isMenuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
+  onInteraction?: () => void; // Optional callback for when user interacts
 }
 
 export const useKeyboardShortcuts = ({
@@ -24,6 +25,7 @@ export const useKeyboardShortcuts = ({
   setTimeness,
   isMenuOpen,
   setMenuOpen,
+  onInteraction,
 }: UseKeyboardShortcutsProps) => {
   const [showHelp, setShowHelp] = useState(false);
 
@@ -151,14 +153,17 @@ export const useKeyboardShortcuts = ({
         case " ":
           event.preventDefault();
           toggleViewSetting("animate");
+          onInteraction?.();
           break;
         case "ArrowLeft":
           event.preventDefault();
           adjustTimeness(-0.05);
+          onInteraction?.();
           break;
         case "ArrowRight":
           event.preventDefault();
           adjustTimeness(0.05);
+          onInteraction?.();
           break;
         case "0":
           event.preventDefault();
@@ -222,6 +227,7 @@ export const useKeyboardShortcuts = ({
       setShowHelp,
       isMenuOpen,
       showHelp,
+      onInteraction,
     ]
   );
 

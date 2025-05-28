@@ -54,11 +54,11 @@ const App = () => {
   const [viewSettings, setViewSettings] = useLocalStorage<ViewSettings>(
     "SpacetimeMap.viewSettings",
     {
-      animate: false,
-      focusOnHover: false,
+      animate: true,
+      focusOnHover: true,
       showSpringArrows: false,
       showGridPoints: false,
-      showGrid: false,
+      showGrid: true,
       showGridNumbers: false,
       showSpringsByDistance: false,
       showSpringsThreshold: 0,
@@ -72,6 +72,7 @@ const App = () => {
   const [totalTime, setTotalTime] = useState(0);
   const [showExplantion, setShowExplantion] = useState(true);
   const [showMultiCity, setShowMultiCity] = useState(false);
+  const [showInteractionHint, setShowInteractionHint] = useState(false);
 
   const mapSizePx = useMapSizePx();
 
@@ -92,6 +93,7 @@ const App = () => {
     setTimeness,
     isMenuOpen,
     setMenuOpen,
+    onInteraction: () => setShowInteractionHint(false),
   });
 
   // Touch gestures for mobile
@@ -197,6 +199,26 @@ const App = () => {
     // The setCityName dependency is missing, but I get an infinite loop if I add it.
   }, [cityName]);
 
+  // Auto-hide explanation after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowExplantion(false);
+      // Show interaction hint after explanation disappears
+      setTimeout(() => setShowInteractionHint(true), 1000);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Auto-hide interaction hint after 10 seconds
+  useEffect(() => {
+    if (showInteractionHint) {
+      const timer = setTimeout(() => {
+        setShowInteractionHint(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [showInteractionHint]);
+
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100"
@@ -206,6 +228,7 @@ const App = () => {
         tabIndex={0}
         onPointerDown={(e) => {
           setIsPressed(true);
+          setShowInteractionHint(false);
         }}
         onPointerUp={(e) => {
           setIsPressed(false);
@@ -223,6 +246,7 @@ const App = () => {
             x: e.touches[0].clientX,
             y: e.touches[0].clientY,
           });
+          setShowInteractionHint(false);
         }}
         onTouchMove={(e) => {
           setHoveredPoint({
@@ -236,7 +260,11 @@ const App = () => {
         }}
         className="absolute -z-10 select-none"
       >
-        {showExplantion && <ExplanationModal />}
+        {showExplantion && (
+          <div onClick={() => setShowExplantion(false)}>
+            <ExplanationModal />
+          </div>
+        )}
         <KeyboardShortcutsModal
           shortcuts={shortcuts}
           isOpen={showHelp}
@@ -291,15 +319,26 @@ const App = () => {
           }}
         >
           {city === null && (
-            <Text
-              position={[0, 0, 0]}
-              fontSize={24}
-              color="black"
-              anchorX="center"
-              anchorY="middle"
-            >
-              Loading...
-            </Text>
+            <group>
+              <Text
+                position={[0, 0, 0]}
+                fontSize={24}
+                color="black"
+                anchorX="center"
+                anchorY="middle"
+              >
+                🗺️ Loading Spacetime Map...
+              </Text>
+              <Text
+                position={[0, -40, 0]}
+                fontSize={14}
+                color="#666666"
+                anchorX="center"
+                anchorY="middle"
+              >
+                Preparing {cityName} data
+              </Text>
+            </group>
           )}
           {!(city === null) && (
             <SpacetimeMap
@@ -330,6 +369,34 @@ const App = () => {
         onShowKeyboardHelp={() => setShowHelp(true)}
         onShowMultiCity={() => setShowMultiCity(true)}
       />
+
+      {/* Animation Status Indicator */}
+      {viewSettings.animate && (
+        <div className="fixed top-4 right-4 z-40 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg animate-pulse">
+          🎬 Animating
+        </div>
+      )}
+
+      {/* Timeness Progress Indicator */}
+      <div className="fixed bottom-4 right-4 z-40 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+        <div className="text-xs text-gray-600 mb-1">Space ← → Time</div>
+        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+            style={{ width: `${timeness * 100}%` }}
+          />
+        </div>
+        <div className="text-xs text-gray-500 mt-1 text-center">
+          {Math.round(timeness * 100)}%
+        </div>
+      </div>
+
+      {/* Interaction Hint */}
+      {showInteractionHint && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg text-sm animate-bounce">
+          💡 Try pressing SPACE or dragging the map!
+        </div>
+      )}
 
       {/* Mobile Floating Action Button - only show on mobile */}
       <div className="md:hidden">
